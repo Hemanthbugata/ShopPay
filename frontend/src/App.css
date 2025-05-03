@@ -78,7 +78,7 @@ button {
     padding: 20px;
   }
 }
-
+/*
 .dashboard-container {
   text-align: center;
   margin-top: 50px;
@@ -106,4 +106,41 @@ button {
 
 .dashboard-container button:hover {
   background-color: #0056b3;
+} */
+
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px;
+  background-color: #f4f4f4;
+}
+
+nav ul {
+  display: flex;
+  list-style: none;
+  padding: 0;
+}
+
+nav ul li {
+  margin: 0 10px;
+  cursor: pointer;
+  padding: 5px 10px;
+  background-color: #ddd;
+  border-radius: 5px;
+}
+
+nav ul li:hover {
+  background-color: #bbb;
+}
+
+main {
+  margin-top: 20px;
+  width: 100%;
 }

@@ -1,8 +1,9 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { CookiesProvider, useCookies } from 'react-cookie';
-import LoginPage from './components/LoginPage';
+//import LoginPage from './components/LoginPage';
 import Dashboard from './components/Dashboard';
+//import ProductEntry from './components/ProductEntry';
 import './App.css';
 
 // AppContent component that uses hooks within the CookiesProvider context
