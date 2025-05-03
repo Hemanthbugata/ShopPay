@@ -30,7 +30,7 @@ const AppContent = () => {
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </Router>
-  );
+  );A
 };
 
 // Main App component that provides the CookiesProvider context
