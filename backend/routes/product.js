@@ -1,24 +1,50 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
 const router = express.Router();
-const {JWT_SECRET} = require('../config');
-
 const Product = require('../models/product');
-const { auth, admin} = require('../middleware/auth');
+const Otp = require('../models/validation'); // Import the Otp model
 
 // Create a new product
 
-router.post('/products', auth, admin, async (req, res) => {
-    const { name, description, price, image, category, brand, stock,reviews } = req.body;
-    const product = new Product(req.body);
+// Create a new product with auto-incremented ID
+router.post('/products', async (req, res) => {
+    const { name, description, price, variantOil, variantSpicy, mobileNumber, otp } = req.body;
+
     try {
+
+        // Validate OTP and mobile number
+        const otpEntry = await Otp.findOne({ mobileNumber, otp });
+        if (!otpEntry) {
+            return res.status(401).json({ error: 'Invalid OTP or mobile number' });
+        }
+
+        // Check if OTP is expired
+        if (otpEntry.expiry < Date.now()) {
+            return res.status(401).json({ error: 'OTP has expired' });
+        }
+
+        // Find the highest existing product ID
+        const lastProduct = await Product.findOne().sort({ id: -1 }); // Sort by ID in descending order
+        const nextId = lastProduct && lastProduct.id ? lastProduct.id + 1 : 1; // Ensure nextId is a valid number            
+        
+        // Create a new product with the next ID
+        const product = new Product({
+            id: nextId,
+            name,
+            description,
+            price,
+            variantOil,
+            variantSpicy
+        });
+
         await product.save();
-        res.status(201).json({ message: 'Product created successfully', product });
+        console.log('Product saved to MongoDB:', product);
+        res.status(201).json({ message: 'Product created successfully with id: ${product.id}', product });
     } catch (error) {
         res.status(400).json({ error: 'Error creating product', details: error.message });
     }
 });
+
 
 // Get all products
 
@@ -49,7 +75,7 @@ router.get('/products/:id', async (req, res) => {
 });
 
 // Update product by ID
-router.put('/products/:id', auth, admin, async (req, res) => {
+router.put('/products/:id',  async (req, res) => {
     const id = req.params.id;
     try {
         const product = await Product.findByIdAndUpdate(id, req.body, { new: true });
@@ -65,7 +91,7 @@ router.put('/products/:id', auth, admin, async (req, res) => {
 
 
 // Delete product by ID
-router.delete('/products/:id', auth, admin, async (req, res) => {
+router.delete('/products/:id', async (req, res) => {
     const id = req.params.id;
     try {
         const product = await Product.findByIdAndDelete(id);
@@ -104,7 +130,7 @@ router.get('/products/brand/:name', async (req, res) => {
 });
 
 // udpate product stock
-router.put('/products/:id/stock', auth, async (req, res) => {
+router.put('/products/:id/stock', async (req, res) => {
     const id = req.params.id;
     const { stock } = req.body;
     try {

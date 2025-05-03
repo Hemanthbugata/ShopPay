@@ -47,6 +47,7 @@ const Loginpage = () => {
   
       if (response.data.message === 'OTP verified successfully') {
         setCookie('otp', otp, { path: '/', maxAge: 60 * 60 * 24 * 365 }); // Set the OTP cookie
+        setCookie('mobileNumber', mobileNumber, { path: '/', maxAge: 60 * 60 * 24 * 365 }); // Save mobile number
         alert('Login successfully. Redirecting to dashboard...');
         navigate('/dashboard'); // Redirect to dashboard
       }

@@ -1,18 +1,25 @@
 const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema({
-    Id: {
+    id: {
         type: Number,
         required: true,
-        unique: true,
-        match: /^[0-9]{3}$/, // Ensures the productId is exactly 3 digits
+        unique: true
     },
     name: String,
     description: String,
+    variantOil: {
+        type: String,
+        enum: ['CP_PO', 'RO_PO', 'CP_SO'], // Cold pressed or refined oil
+        required: true
+      },
+      variantSpicy: {
+        type: String,
+        enum: ['LOW', 'MEDIUM', 'HIGH'], // Cold pressed or refined oil
+        required: true
+      },     
     price: Number,
     image: String,
-    category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
-    stock: Number,
     rating: {
         type: Number,
         default: 0,
