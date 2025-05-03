@@ -78,3 +78,32 @@ button {
     padding: 20px;
   }
 }
+
+.dashboard-container {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.dashboard-container h1 {
+  font-size: 2rem;
+  color: #333;
+}
+
+.dashboard-container p {
+  font-size: 1.2rem;
+  margin: 10px 0;
+}
+
+.dashboard-container button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.dashboard-container button:hover {
+  background-color: #0056b3;
+}
