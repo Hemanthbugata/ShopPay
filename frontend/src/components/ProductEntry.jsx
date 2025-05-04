@@ -8,8 +8,10 @@ const ProductEntry = () => {
     id: '',
     name: '',
     description: '',
+    variantType: '',
     variantOil: '',
     variantSpicy: '',
+    variantWeight: '',
     price: '',
     mobileNumber: '',
     otp: '',
@@ -32,7 +34,15 @@ const ProductEntry = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    const updatedFormData = { ...formData, [name]: value };
+  
+    // Auto-generate product name based on variants
+    const { variantType, variantWeight, variantOil, variantSpicy } = updatedFormData;
+    if (variantType || variantWeight || variantOil || variantSpicy) {
+      updatedFormData.name = `${variantType || ''} ${variantWeight || ''} ${variantOil || ''} ${variantSpicy || ''}`.trim();
+    }
+  
+    setFormData(updatedFormData);
   };
 
   const handleSubmit = async (e) => {
@@ -86,8 +96,7 @@ const ProductEntry = () => {
           name="id"
           placeholder="Product ID"
           value={formData.id}
-          onChange={handleInputChange}
-          required
+          onChange={handleInputChange}        
           disabled
         />
         <input
@@ -97,6 +106,7 @@ const ProductEntry = () => {
           value={formData.name}
           onChange={handleInputChange}
           required
+          disabled
         />
         <textarea
           name="description"
@@ -105,6 +115,21 @@ const ProductEntry = () => {
           onChange={handleInputChange}
           required
         />
+        <select name="variantType" value={formData.variantType} onChange={handleInputChange} required>
+            <option value="">Select Variant Type</option>
+            <option value="CHICKEN">Chicken</option>
+            <option value="MUTTON">Mutton</option>
+            <option value="PRAWNS">Prawns</option>
+            <option value="GONGURA">Gongura</option>
+            <option value="GONGURA CHICKEN">Gongura Chicken</option>
+            <option value="GONGURA MUTTON">Gongura Mutton</option>
+            <option value="GONGURA PRAWNS">Gongura Prawns</option>
+        </select>
+        <select name="variantWeight" value={formData.variantWeight} onChange={handleInputChange} required>
+            <option value="">Select Variant Weight</option>
+            <option value="Half kg">Half kg</option>
+            <option value="1kg">1 kg</option>
+        </select>
         <select name="variantOil" value={formData.variantOil} onChange={handleInputChange} required>
           <option value="">Select Oil Variant</option>
           <option value="CP_PO">Cold Pressed Peanut Oil</option>

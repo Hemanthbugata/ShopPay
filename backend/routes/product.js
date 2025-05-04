@@ -8,8 +8,9 @@ const Otp = require('../models/validation');
 
 // Create a new product with auto-incremented ID
 router.post('/products', async (req, res) => {
-    const { name, description, price, variantOil, variantSpicy, mobileNumber, otp } = req.body;
-  
+    const { name, description, price, variantOil, variantSpicy, mobileNumber, otp, variantType, VariantWeight } = req.body;
+    
+    console.log('Received data:', req.body); // Log the received data for debugging
     try {
       // Validate OTP and mobile number
       const otpEntry = await Otp.findOne({ mobileNumber, otp });
@@ -25,15 +26,10 @@ router.post('/products', async (req, res) => {
   
       const counter = await Counter.findByIdAndUpdate(
         { _id: 'productId' },
-        { $inc: { seq: 1 } }, // Increment the sequence number
-        { new: true, upsert: true, setDefaultsOnInsert: true } // Create the counter if it doesn't exist
+        { $inc: { seq: 1 } },
+        { new: true, upsert: true } // Create the counter if it doesn't exist
       );
-
-      if (!counter) {
-        return res.status(500).json({ error: 'Failed to create counter' });
-        }
         const nextId = counter.seq;
-        console.log('Next product ID:', nextId);
 
       // Create a new product with the next ID
       const product = new Product({
@@ -43,6 +39,8 @@ router.post('/products', async (req, res) => {
         price,
         variantOil,
         variantSpicy,
+        variantType,
+        variantWeight
       });
   
       await product.save();

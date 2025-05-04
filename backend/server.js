@@ -50,15 +50,20 @@ app.post('/send-otp', async (req, res) => {
   }
 
   const otp = Math.floor(1000 + Math.random() * 9000);
-
+  console.log('Generated OTP:', otp);
   try {
     // Save OTP to MongoDB
     const otpEntry = await Otp.findOneAndUpdate({
       mobileNumber,
       otp,
-      expiry: Date.now() + ( 365 * 12 * 60 * 60 * 1000 ), // OTP valid for 10 minutes
-    });
-    await otpEntry.save();
+      expiry: Date.now() + ( 365 * 12 * 60 * 60 * 1000 ), // OTP valid for 10 minutes      
+    },
+    { 
+      new: true, // Return the updated document
+      upsert: true // Create a new document if none exists
+    }
+   );
+
     console.log('OTP saved to MongoDB:', otpEntry);
 
     res.status(200).json({ message: 'OTP sent successfully'});
@@ -105,7 +110,7 @@ app.post('/verify-otp', async (req, res) => {
 
   try {
     // Find OTP in MongoDB
-    const otpEntry = await Otp.findOneAndUpdate({ mobileNumber, otp });
+    const otpEntry = await Otp.findOne({ mobileNumber, otp });
 
     if (!otpEntry) {
       return res.status(400).json({ message: 'Invalid OTP' });
