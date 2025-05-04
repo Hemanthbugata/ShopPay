@@ -4,6 +4,7 @@ import { CookiesProvider, useCookies } from 'react-cookie';
 import LoginPage from './components/LoginPage';
 import Dashboard from './components/Dashboard';
 import ProductEntry from './components/ProductEntry';
+import ProductList from './components/ProductList'; 
 import './App.css';
 
 // AppContent component that uses hooks within the CookiesProvider context
@@ -29,9 +30,15 @@ const AppContent = () => {
 
         {/* Catch-all route for undefined paths */}
         <Route path="*" element={<Navigate to="/login" />} />
+
+
+        <Route path="/product-list" element={<ProductList />} />
+
+        <Route path="/product-entry" element={<ProductEntry />} />
+
       </Routes>
     </Router>
-  );A
+  );
 };
 
 // Main App component that provides the CookiesProvider context

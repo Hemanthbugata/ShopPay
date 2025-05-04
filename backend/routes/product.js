@@ -8,7 +8,7 @@ const Otp = require('../models/validation');
 
 // Create a new product with auto-incremented ID
 router.post('/products', async (req, res) => {
-    const { name, description, price, variantOil, variantSpicy, mobileNumber, otp, variantType, VariantWeight } = req.body;
+    const { name, description, price, variantOil, variantSpicy, mobileNumber, otp, variantType, variantWeight} = req.body;
     
     console.log('Received data:', req.body); // Log the received data for debugging
     try {
@@ -38,9 +38,10 @@ router.post('/products', async (req, res) => {
         description,
         price,
         variantOil,
+        variantWeight,
+        mobileNumber,
         variantSpicy,
-        variantType,
-        variantWeight
+        variantType
       });
   
       await product.save();
@@ -68,10 +69,10 @@ router.get('/products', async (req, res) => {
 
 // Get product by ID
 
-router.get('/products/:id', async (req, res) => {
-    const id = req.params.id;
+router.get('/products/:Id', async (req, res) => {
+    const Importd = req.params.Id;
     try {
-        const product = await Product.findById(id);
+        const product = await Product.findById(Id);
         if (product) {
             res.json({ message: 'Product fetched successfully', product });
         }
@@ -84,10 +85,16 @@ router.get('/products/:id', async (req, res) => {
 });
 
 // Update product by ID
-router.put('/products/:id',  async (req, res) => {
-    const id = req.params.id;
+router.put('/products/:Id', async (req, res) => {
+    const Id = req.params.Id; // Extract the product Id from the request parameters
     try {
-        const product = await Product.findByIdAndUpdate(id, req.body, { new: true });
+        // Find the product by its Id and update it
+        const product = await Product.findOneAndUpdate(
+            { Id: Id }, // Query to find the product by Id
+            req.body,   // Update the product with the request body
+            { upsert: true } // Return the updated document
+        );
+
         if (product) {
             res.json({ message: 'Product updated successfully', product });
         } else {
@@ -98,61 +105,21 @@ router.put('/products/:id',  async (req, res) => {
     }
 });
 
-
-// Delete product by ID
-router.delete('/products/:id', async (req, res) => {
-    const id = req.params.id;
+// Delete product by custom field Id
+router.delete('/products/:Id', async (req, res) => {
+    const Id = req.params.Id; // Extract the product Id from the request parameters
     try {
-        const product = await Product.findByIdAndDelete(id);
+        // Find the product by its custom Id field and delete it
+        const product = await Product.findOneAndDelete({ Id: Id });
+
         if (product) {
             res.json({ message: 'Product deleted successfully' });
-        }
-        else {
+        } else {
             res.status(404).json({ error: 'Product not found' });
         }
     } catch (error) {
         res.status(500).json({ error: 'Error deleting product', details: error.message });
     }
 });
-
-// Get products by categoryid
-router.get('/products/category/:id', async (req, res) => {
-    const id = req.params.id;
-    try {
-        const products = await Product.find({ category: id });
-        res.json({ message: 'Products fetched successfully', products });
-    } catch (error) {
-        res.status(500).json({ error: 'Error fetching products', details: error.message });
-    }
-});
-
-// Get products by brandname
-
-router.get('/products/brand/:name', async (req, res) => {
-    const name = req.params.name;
-    try {
-        const products = await Product.find({ brand: name });
-        res.json({ message: 'Products fetched successfully', products });
-    } catch (error) {
-        res.status(500).json({ error: 'Error fetching products', details: error.message });
-    }
-});
-
-// udpate product stock
-router.put('/products/:id/stock', async (req, res) => {
-    const id = req.params.id;
-    const { stock } = req.body;
-    try {
-        const product = await Product.findByIdAndUpdate(id, { stock }, { new: true });
-        if (product) {
-            res.json({ message: 'Product stock updated successfully', product });
-        } else {
-            res.status(404).json({ error: 'Product not found' });
-        }   
-    } catch (error) {
-        res.status(400).json({ error: 'Error updating product stock', details: error.message });
-    }
-});
-
 
 module.exports = router;

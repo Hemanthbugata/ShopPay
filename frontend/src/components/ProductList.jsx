@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 
-const ProductList = () => {
-  const location = useLocation(); // Get the current location
-  const productToEdit = location.state?.product || null; // Get the product data or null
-  
-  const [products, setProducts] = useState([]);
+const ProductEntry = () => {
+const [products, setProducts] = useState([]);
+const navigate = useNavigate(); // Initialize navigate function
   const [formData, setFormData] = useState({
     Id: '',
     name: '',
@@ -24,11 +22,8 @@ const ProductList = () => {
   const [cookies] = useCookies(['otp', 'mobileNumber']);
 
   useEffect(() => {
-    if (productToEdit) {
-      setFormData(productToEdit); // Pre-fill the form with the product data
-      setIsEditing(true); // Set editing mode
-    }
-  }, [productToEdit]);
+    fetchProducts();
+  }, []);
 
   const fetchProducts = async () => {
     try {
@@ -82,8 +77,9 @@ const ProductList = () => {
   };
 
   const handleEdit = (product) => {
-    setFormData(product);
-    setIsEditing(true);
+    // Navigate to the product entry page with the product's data as state
+    navigate('/product-entry', { state: { product } });
+    //navigate('/product-entry', { state: { product } });
   };
 
   const handleDelete = async (Id) => {
@@ -98,72 +94,6 @@ const ProductList = () => {
 
   return (
     <div className="product-entry-container">
-      <h2>{isEditing ? 'Edit Product' : 'Create Product'}</h2>
-      <form onSubmit={handleSubmit} className="product-form">
-        <input
-          type="text"
-          name="Id"
-          placeholder="Product ID"
-          value={formData.Id}
-          onChange={handleInputChange}        
-          disabled
-        />
-        <input
-          type="text"
-          name="name"
-          placeholder="Product Name"
-          value={formData.name}
-          onChange={handleInputChange}
-          required
-          disabled
-        />
-        <textarea
-          name="description"
-          placeholder="Product Description"
-          value={formData.description}
-          onChange={handleInputChange}
-          required
-        />
-        <select name="variantType" value={formData.variantType} onChange={handleInputChange} required>
-            <option value="">Select Variant Type</option>
-            <option value="CHICKEN">Chicken</option>
-            <option value="MUTTON">Mutton</option>
-            <option value="PRAWNS">Prawns</option>
-            <option value="GONGURA">Gongura</option>
-            <option value="GONGURA CHICKEN">Gongura Chicken</option>
-            <option value="GONGURA MUTTON">Gongura Mutton</option>
-            <option value="GONGURA PRAWNS">Gongura Prawns</option>
-        </select>
-        <select name="variantWeight" value={formData.variantWeight} onChange={handleInputChange} required>
-            <option value="">Select Variant Weight</option>
-            <option value="Half kg">Half kg</option>
-            <option value="1kg">1 kg</option>
-        </select>
-        <select name="variantOil" value={formData.variantOil} onChange={handleInputChange} required>
-          <option value="">Select Oil Variant</option>
-          <option value="CP_PO">Cold Pressed Peanut Oil</option>
-          <option value="RO_PO">Refined Peanut Oil</option>
-          <option value="CP_SO">Cold Pressed Sesame Oil</option>
-        </select>
-        <select name="variantSpicy" value={formData.variantSpicy} onChange={handleInputChange} required>
-          <option value="">Select Spicy Variant</option>
-          <option value="LOW">Low</option>
-          <option value="MEDIUM">Medium</option>
-          <option value="HIGH">High</option>
-        </select>
-        <input
-          type="number"
-          name="price"
-          placeholder="Product Price"
-          value={formData.price}
-          onChange={handleInputChange}
-          required
-        />
-        <button type="submit" className="submit-button">
-          {isEditing ? 'Update Product' : 'Create Product'}
-        </button>
-      </form>
-
       <h2>Product List</h2>
       <ul className="product-list">
         {products.map((product) => (
@@ -182,4 +112,4 @@ const ProductList = () => {
   );
 };
 
-export default ProductList;
+export default ProductEntry;
