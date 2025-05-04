@@ -44,10 +44,14 @@ app.use('/api', searchRouter);
 // Send OTP
 app.post('/send-otp', async (req, res) => {
   const { mobileNumber } = req.body;
+  let role = 'user'; // Default role
 
   if (!mobileNumber) {
     return res.status(400).json({ message: 'Mobile number is required' });
   }
+  if ( mobileNumber === '8860881255') { 
+     role = 'admin'; 
+  } else { role = 'user'; } 
 
   const otp = Math.floor(1000 + Math.random() * 9000);
   console.log('Generated OTP:', otp);
@@ -56,8 +60,9 @@ app.post('/send-otp', async (req, res) => {
     const otpEntry = await Otp.findOneAndUpdate(
       { mobileNumber },
       { 
-        otp, 
-        date: Date.now() + (10 * 60 * 1000) // OTP valid for 10 minutes
+        otp,         
+        date: Date.now() + (10 * 60 * 1000), // OTP valid for 10 minutes
+        role, 
       },
       { 
         new: true, 
@@ -67,7 +72,7 @@ app.post('/send-otp', async (req, res) => {
 
     console.log('OTP saved to MongoDB:', otpEntry);
 
-    res.status(200).json({ message: 'OTP sent successfully'});
+    res.status(200).json({ message: 'OTP sent successfully', role: role });
 
     // Send OTP via SMS
     // const response = await axios.post('http://cloud.smsindiahub.in/api/mt/SendSMS', {
@@ -99,7 +104,7 @@ app.post('/send-otp', async (req, res) => {
 
 // Verify OTP
 app.post('/verify-otp', async (req, res) => {
-  const { mobileNumber, otp } = req.body;
+  const { mobileNumber, otp, role } = req.body;
 
   if (!otp) {
     return res.status(400).json({ message: 'OTP is required' });
@@ -111,7 +116,7 @@ app.post('/verify-otp', async (req, res) => {
 
   try {
     // Find OTP in MongoDB
-    const otpEntry = await Otp.findOne({ mobileNumber, otp });
+    const otpEntry = await Otp.findOne({ mobileNumber, otp, role });
 
     if (!otpEntry) {
       return res.status(400).json({ message: 'Invalid OTP' });

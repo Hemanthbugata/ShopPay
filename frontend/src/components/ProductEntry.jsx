@@ -19,9 +19,10 @@ const ProductList = () => {
     price: '',
     mobileNumber: '',
     otp: '',
+    role: '',
   });
   const [isEditing, setIsEditing] = useState(false);
-  const [cookies] = useCookies(['otp', 'mobileNumber']);
+  const [cookies] = useCookies(['otp', 'mobileNumber', 'role']);
 
   useEffect(() => {
     if (productToEdit) {
@@ -59,6 +60,7 @@ const ProductList = () => {
         ...formData,
         otp: cookies.otp,
         mobileNumber: cookies.mobileNumber,
+        role: cookies.role,
       };
 
       console.log('Payload:', payload);

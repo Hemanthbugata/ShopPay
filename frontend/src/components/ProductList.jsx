@@ -17,9 +17,10 @@ const navigate = useNavigate(); // Initialize navigate function
     price: '',
     mobileNumber: '',
     otp: '',
+    role: '', 
   });
   const [isEditing, setIsEditing] = useState(false);
-  const [cookies] = useCookies(['otp', 'mobileNumber']);
+  const [cookies] = useCookies(['otp', 'mobileNumber', 'role']);
 
   useEffect(() => {
     fetchProducts();
@@ -54,6 +55,7 @@ const navigate = useNavigate(); // Initialize navigate function
         ...formData,
         otp: cookies.otp,
         mobileNumber: cookies.mobileNumber,
+        role: cookies.role,
       };
 
       console.log('Payload:', payload);

@@ -7,7 +7,7 @@ const Loginpage = () => {
   const [mobileNumber, setMobileNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [cookies, setCookie] = useCookies(['otp']); // Use useCookies to handle cookies
+  const [cookies, setCookie] = useCookies(['otp', 'role']); // Use useCookies to handle cookies
   const navigate = useNavigate(); // Initialize navigate function
 
   const handleSendOtp = async () => {
@@ -18,8 +18,9 @@ const Loginpage = () => {
     try {
       const response = await axios.post('http://localhost:5000/send-otp', { mobileNumber });
       if (response.data.message === 'OTP sent successfully') {
-        alert('OTP sent successfully. Please enter the OTP.');
-        setErrorMessage('send otp successfully');
+        alert('OTP sent successfully. Please enter the OTP.');                
+        setCookie('role', response.data.role, { path: '/', maxAge: 60 * 60 * 24 * 365 * 1000 }); // Save role
+        setErrorMessage('send otp successfully');               
       }
     } catch (error) {
       setErrorMessage('Error sending OTP');
@@ -31,28 +32,28 @@ const Loginpage = () => {
       return;
     }
   
-    // Special case for OTP 1111
-    /* if (otp === '1111') {
-      setCookie('otp', otp, { path: '/', maxAge: 60 * 60 * 24 * 365 }); // Set the OTP cookie
-      alert('Login successfully. Redirecting to dashboard...');
-      navigate('/dashboard'); // Redirect to dashboard
-      return;
-    } */
-  
-    try {
+    try {                        
+      const role = cookies.role; // Get the role from cookies       
       const response = await axios.post('http://localhost:5000/verify-otp', {
         mobileNumber,
         otp,
+        role
       });
   
       if (response.data.message === 'OTP verified successfully') {
         setCookie('otp', otp, { path: '/', maxAge: 60 * 60 * 24 * 365 }); // Set the OTP cookie
-        setCookie('mobileNumber', mobileNumber, { path: '/', maxAge: 60 * 60 * 24 * 365 }); // Save mobile number
+        setCookie('mobileNumber', mobileNumber, { path: '/', maxAge: 60 * 60 * 24 * 365 }); // Save mobile number  
         alert('Login successfully. Redirecting to dashboard...');
-        navigate('/dashboard'); // Redirect to dashboard
-      }
+        if (role === 'admin') {
+          navigate('/dashboard'); // Redirect to admin dashboard
+        } else {  
+          alert('Login successfully. Redirecting to dashboard...'); // Alert for successful login
+        navigate('/userhomepage'); // Redirect to dashboard
+        }
+      } 
     } catch (error) {
-      setErrorMessage('Invalid OTP');
+     // setErrorMessage(`Invalid OTP. Role: ${role}`); // Set error message for invalid OTP
+       setErrorMessage('Invalid OTP');      
     }
   };
   return (

@@ -16,6 +16,12 @@ const otpSchema = new mongoose.Schema({
         type: Date,
         default: Date.now, // Automatically sets the current date
     },
+    role: {
+        type: String,
+        enum: ["user", "admin"], // Only allows 'user' or 'admin'
+        required: false,
+        default: "user",
+    },
 });
 
 module.exports = mongoose.model("Otp", otpSchema);

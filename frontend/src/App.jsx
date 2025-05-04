@@ -1,40 +1,80 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { CookiesProvider, useCookies } from 'react-cookie';
-import LoginPage from './components/LoginPage';
 import Dashboard from './components/Dashboard';
+import Userhomepage from './components/Userhomepage'; // Import the UserhomePage component
+import LoginPage from './components/Loginpage'; // Import the LoginPage component
 import ProductEntry from './components/ProductEntry';
 import ProductList from './components/ProductList'; 
 import './App.css';
 
 // AppContent component that uses hooks within the CookiesProvider context
 const AppContent = () => {
-  const [cookies, removeCookie] = useCookies(['otp']);
+  const [cookies, removeCookie] = useCookies(['otp', 'mobileNumber', 'role']); // Use useCookies to handle cookies
   const isAuthenticated = !!cookies.otp; // Check if the user is authenticated
+  const userRole = cookies.role; // Get the user's role from cookies
 
   const handleLogout = () => {
     removeCookie('otp');
+    removeCookie('role'); 
+    removeCookie('mobileNumber');
   };
 
   return (
     <Router>
       <Routes>
         {/* Redirect to dashboard if authenticated, otherwise show login */}
-        <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" /> : <LoginPage />} />
+        <Route
+          path="/login"
+          element={
+            isAuthenticated
+              ? userRole === 'admin'
+                ? <Navigate to="/dashboard" />
+                : <Navigate to="/userhomepage" />
+              : <LoginPage />
+          }
+        />
 
-        {/* Show dashboard if authenticated, otherwise redirect to login */}
-        <Route path="/dashboard" element={isAuthenticated ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/login" />} />
+        {/* Admin dashboard */}
+        <Route
+          path="/dashboard"
+          element={isAuthenticated && userRole === 'admin' 
+            ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/login" />}
+        />
 
-        {/* Default route redirects to login */}
-        <Route path="/" element={<Navigate to="/login" />} />
+        {/* User homepage */}
+        <Route
+          path="/userhomepage"
+          element={isAuthenticated && userRole === 'user'
+             ? <Userhomepage onLogout={handleLogout} /> : <Navigate to="/login" />}
+        />
 
-        {/* Catch-all route for undefined paths */}
+        {/* Product list and entry routes */}
+        <Route
+          path="/product-list"
+          element={isAuthenticated && userRole === 'admin' 
+            ? <ProductList /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/product-entry"
+          element={isAuthenticated && userRole === 'admin' 
+            ? <ProductEntry /> : <Navigate to="/login" />}
+        />
+
+        {/* Default route */}
+        <Route
+          path="/"
+          element={
+            isAuthenticated
+              ? userRole === 'admin'
+                ? <Navigate to="/dashboard" />
+                : <Navigate to="/userhomepage" />
+              : <Navigate to="/login" />
+          }
+        />
+
+        {/* Catch-all route */}
         <Route path="*" element={<Navigate to="/login" />} />
-
-
-        <Route path="/product-list" element={<ProductList />} />
-
-        <Route path="/product-entry" element={<ProductEntry />} />
 
       </Routes>
     </Router>
