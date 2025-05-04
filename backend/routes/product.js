@@ -25,10 +25,15 @@ router.post('/products', async (req, res) => {
   
       const counter = await Counter.findByIdAndUpdate(
         { _id: 'productId' },
-        { $inc: { seq: 1 } },
-        { new: true, upsert: true } // Create the counter if it doesn't exist
+        { $inc: { seq: 1 } }, // Increment the sequence number
+        { new: true, upsert: true, setDefaultsOnInsert: true } // Create the counter if it doesn't exist
       );
+
+      if (!counter) {
+        return res.status(500).json({ error: 'Failed to create counter' });
+        }
         const nextId = counter.seq;
+        console.log('Next product ID:', nextId);
 
       // Create a new product with the next ID
       const product = new Product({
