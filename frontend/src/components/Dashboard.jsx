@@ -1,20 +1,26 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ProductEntry from './ProductEntry';
-// Import other components for stock input, employee creation, stock issue, etc.
 
 const Dashboard = ({ onLogout }) => {
-  const [activeMenu, setActiveMenu] = useState(' ');
+  const [activeMenu, setActiveMenu] = useState('');
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    onLogout();
+    navigate('/login');
+  };
 
   const renderContent = () => {
     switch (activeMenu) {
       case 'productEntry':
         return <ProductEntry />;
       case 'stockInput':
-        return <div>Stock Input Component</div>; // Replace with actual StockInput component
+        return <div>Stock Input Component</div>;
       case 'employeeCreation':
-        return <div>Employee Creation Component</div>; // Replace with actual EmployeeCreation component
+        return <div>Employee Creation Component</div>;
       case 'stockIssue':
-        return <div>Stock Issue Component</div>; // Replace with actual StockIssue component
+        return <div>Stock Issue Component</div>;
       default:
         return <div>Select a menu option</div>;
     }
@@ -22,18 +28,20 @@ const Dashboard = ({ onLogout }) => {
 
   return (
     <div className="dashboard-container">
-      <header>
+      <header className="dashboard-header">
         <h1>Dashboard</h1>
-        <button onClick={onLogout}>Logout</button>
+        <nav>
+          <ul className="nav-links">
+            <li onClick={() => setActiveMenu('productEntry')}>Product Creation</li>
+            <li onClick={() => setActiveMenu('stockInput')}>Stock Input</li>
+            <li onClick={() => setActiveMenu('employeeCreation')}>Employee Creation</li>
+            <li onClick={() => setActiveMenu('stockIssue')}>Stock Issue</li>
+            <li className="logout-link" onClick={handleLogout}>
+              Logout
+            </li>
+          </ul>
+        </nav>
       </header>
-      <nav>
-        <ul>
-          <li onClick={(OnProductEntry) => setActiveMenu('productEntry')}>Product Creation</li>
-          <li onClick={() => setActiveMenu('stockInput')}>Stock Input</li>
-          <li onClick={() => setActiveMenu('employeeCreation')}>Employee Creation</li>
-          <li onClick={() => setActiveMenu('stockIssue')}>Stock Issue</li>
-        </ul>
-      </nav>
       <main>{renderContent()}</main>
     </div>
   );

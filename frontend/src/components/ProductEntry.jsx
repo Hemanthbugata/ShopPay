@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useCookies } from 'react-cookie'; // Import useCookies
+import { useCookies } from 'react-cookie';
 import axios from 'axios';
 
 const ProductEntry = () => {
@@ -11,12 +11,12 @@ const ProductEntry = () => {
     variantOil: '',
     variantSpicy: '',
     price: '',
-    mobileNumber: '', // Add mobileNumber to formData
-    otp: '', // Add otp to formData
+    mobileNumber: '',
+    otp: '',
   });
   const [isEditing, setIsEditing] = useState(false);
-  const [cookies] = useCookies(['otp', 'mobileNumber']); // Read cookies
-  // Fetch products on component mount
+  const [cookies] = useCookies(['otp', 'mobileNumber']);
+
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -38,24 +38,27 @@ const ProductEntry = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-        const payload = {
-            ...formData,
-            otp: cookies.otp, // Add OTP from cookies
-            mobileNumber: cookies.mobileNumber, // Add mobile number from cookies
-          };
-    
+      const payload = {
+        ...formData,
+        otp: cookies.otp,
+        mobileNumber: cookies.mobileNumber,
+      };
+
+      console.log('Payload:', payload);
+
       if (isEditing) {
-        await axios.put(`http://localhost:5000/api/products/${formData.id}`, formData);
+        await axios.put(`http://localhost:5000/api/products/${formData.id}`, payload);
         alert('Product updated successfully');
       } else {
-        await axios.post('http://localhost:5000/api/products', formData);
+        await axios.post('http://localhost:5000/api/products', payload);
         alert('Product created successfully');
       }
       setFormData({ id: '', name: '', description: '', variantOil: '', variantSpicy: '', price: '' });
       setIsEditing(false);
       fetchProducts();
     } catch (error) {
-      console.error('Error saving product:', error);
+      console.error('Error saving product:', error.response?.data || error.message);
+      alert(error.response?.data?.error || 'Error saving product');
     }
   };
 
@@ -77,8 +80,8 @@ const ProductEntry = () => {
   return (
     <div className="product-entry-container">
       <h2>{isEditing ? 'Edit Product' : 'Create Product'}</h2>
-      <form onSubmit={handleSubmit}>
-      <input
+      <form onSubmit={handleSubmit} className="product-form">
+        <input
           type="text"
           name="id"
           placeholder="Product ID"
@@ -86,7 +89,7 @@ const ProductEntry = () => {
           onChange={handleInputChange}
           required
           disabled
-        /> 
+        />
         <input
           type="text"
           name="name"
@@ -122,16 +125,22 @@ const ProductEntry = () => {
           onChange={handleInputChange}
           required
         />
-        <button type="submit">{isEditing ? 'Update Product' : 'Create Product'}</button>
+        <button type="submit" className="submit-button">
+          {isEditing ? 'Update Product' : 'Create Product'}
+        </button>
       </form>
 
       <h2>Product List</h2>
-      <ul>
+      <ul className="product-list">
         {products.map((product) => (
-          <li key={product.id}>
-            <strong>{product.name}</strong> - {product.description} - ${product.price}
-            <button onClick={() => handleEdit(product)}>Edit</button>
-            <button onClick={() => handleDelete(product.id)}>Delete</button>
+          <li key={product.id} className="product-item">
+            <div>
+              <strong>{product.name}</strong> - {product.description} - ${product.price}
+            </div>
+            <div>
+              <button onClick={() => handleEdit(product)} className="edit-button">Edit</button>
+              <button onClick={() => handleDelete(product.id)} className="delete-button">Delete</button>
+            </div>
           </li>
         ))}
       </ul>

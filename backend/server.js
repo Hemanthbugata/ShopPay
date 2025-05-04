@@ -52,15 +52,12 @@ app.post('/send-otp', async (req, res) => {
   const otp = Math.floor(1000 + Math.random() * 9000);
 
   try {
-    // Find and update the OTP if it exists, or create a new one
-    const otpEntry = await Otp.findOneAndUpdate(
-      { mobileNumber }, // Search for an existing OTP by mobile number
-      { 
-        otp, 
-        expiry: Date.now() + 10 * 60 * 1000 // OTP valid for 10 minutes
-      },
-      { new: true, upsert: true } // Create a new entry if it doesn't exist
-    );
+    // Save OTP to MongoDB
+    const otpEntry = await Otp.findOneAndUpdate({
+      mobileNumber,
+      otp,
+      expiry: Date.now() + ( 365 * 12 * 60 * 60 * 1000 ), // OTP valid for 10 minutes
+    });
     await otpEntry.save();
     console.log('OTP saved to MongoDB:', otpEntry);
 

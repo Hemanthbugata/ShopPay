@@ -2,49 +2,55 @@ const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
 const Product = require('../models/product');
-const Otp = require('../models/validation'); // Import the Otp model
-
+const Counter = require('../models/counter'); 
+const Otp = require('../models/validation'); 
 // Create a new product
 
 // Create a new product with auto-incremented ID
 router.post('/products', async (req, res) => {
     const { name, description, price, variantOil, variantSpicy, mobileNumber, otp } = req.body;
-
+  
     try {
+      // Validate OTP and mobile number
+      const otpEntry = await Otp.findOne({ mobileNumber, otp });
+      if (!otpEntry) {
+        return res.status(401).json({ error: 'Invalid OTP or mobile number' });
+      }
+  
+      // Check if OTP is expired
+      if (otpEntry.expiry < Date.now()) {
+        await Otp.deleteOne({ _id: otpEntry._id }); // Delete expired OTP
+        return res.status(401).json({ error: 'OTP has expired' });
+      }
+  
+      const counter = await Counter.findByIdAndUpdate(
+        { _id: 'productId' },
+        { $inc: { seq: 1 } },
+        { new: true, upsert: true } // Create the counter if it doesn't exist
+      );
+        const nextId = counter.seq;
 
-        // Validate OTP and mobile number
-        const otpEntry = await Otp.findOne({ mobileNumber, otp });
-        if (!otpEntry) {
-            return res.status(401).json({ error: 'Invalid OTP or mobile number' });
-        }
-
-        // Check if OTP is expired
-        if (otpEntry.expiry < Date.now()) {
-            return res.status(401).json({ error: 'OTP has expired' });
-        }
-
-        // Find the highest existing product ID
-        const lastProduct = await Product.findOne().sort({ id: -1 }); // Sort by ID in descending order
-        const nextId = lastProduct && lastProduct.id ? lastProduct.id + 1 : 1; // Ensure nextId is a valid number            
-        
-        // Create a new product with the next ID
-        const product = new Product({
-            id: nextId,
-            name,
-            description,
-            price,
-            variantOil,
-            variantSpicy
-        });
-
-        await product.save();
-        console.log('Product saved to MongoDB:', product);
-        res.status(201).json({ message: 'Product created successfully with id: ${product.id}', product });
+      // Create a new product with the next ID
+      const product = new Product({
+        Id: nextId,
+        name,
+        description,
+        price,
+        variantOil,
+        variantSpicy,
+      });
+  
+      await product.save();
+      res.status(201).json({ message: `Product created successfully with id: ${product.Id}`, product });
     } catch (error) {
+        if (error.code === 11000) {
+          // Handle duplicate key error
+          return res.status(400).json({ error: 'Duplicate key error', details: error.message });
+        }
+        console.error('Error creating product:', error);
         res.status(400).json({ error: 'Error creating product', details: error.message });
-    }
-});
-
+      }
+    });
 
 // Get all products
 
