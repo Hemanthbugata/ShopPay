@@ -22,6 +22,19 @@ const otpSchema = new mongoose.Schema({
         required: false,
         default: "user",
     },
+    name: {
+        type: String,
+        required: false,
+    },
+    address: {
+        type: String,
+        required: false,
+    },
+    email: {
+        type: String,
+        required: false,
+        match: /^\S+@\S+\.\S+$/, // Basic email format validation
+    },
 });
 
 module.exports = mongoose.model("Otp", otpSchema);

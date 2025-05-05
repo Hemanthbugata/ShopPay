@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import UserAccount from './UserAccount';
+import UserProducts from './UserProducts';
+import '../styles/Userhomepage.css';
+
 
 const UserhomePage = ({ onLogout }) => {
   const [activeMenu, setActiveMenu] = useState('');
@@ -13,25 +17,26 @@ const UserhomePage = ({ onLogout }) => {
   const renderContent = () => {
     switch (activeMenu) {
       case 'account':
-        return <div>Account Details Component</div>;
+        return < UserAccount />;        
+      case 'products':
+        return < UserProducts />;
       case 'cart':
-        return <div>Cart Component</div>;
-      case 'createOrder':
-        return <div>Create Order Component</div>;
-      default:
-        return <div>Select a menu option</div>;
+        return <div>Add to Cart</div>;
+      case 'placeOrder':
+        return <div>Place order</div>;
     }
   };
 
   return (
     <div className="home-container">
       <header className="home-header">
-        <h1>Welcome to ShopPay</h1>
+        <h1>MyFoods Products</h1>
         <nav>
           <ul className="nav-links">
-            <li onClick={() => setActiveMenu('account')}>Account</li>
-            <li onClick={() => setActiveMenu('cart')}>Cart</li>
-            <li onClick={() => setActiveMenu('createOrder')}>Create Order</li>
+            <li onClick={() => setActiveMenu('account')}>User Account</li>
+            <li onClick={() => setActiveMenu('products')}>Products</li>
+            <li onClick={() => setActiveMenu('cart')}>Add to Cart</li>
+            <li onClick={() => setActiveMenu('placeOrder')}>Place Order</li>
             <li className="logout-link" onClick={handleLogout}>
               Logout
             </li>

@@ -28,7 +28,7 @@ const navigate = useNavigate(); // Initialize navigate function
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/products',{
+      const response = await axios.get('http://localhost:5000/products',{
         params: {
           mobileNumber: cookies.mobileNumber,
           otp: cookies.otp,
@@ -68,10 +68,10 @@ const navigate = useNavigate(); // Initialize navigate function
 
       if (isEditing) {
         // Update product             
-        await axios.put(`http://localhost:5000/api/products/${formData.Id}`, payload);
+        await axios.put(`http://localhost:5000/products/${formData.Id}`, payload);
         alert('Product updated successfully');
       } else {
-        await axios.post('http://localhost:5000/api/products', payload);
+        await axios.post('http://localhost:5000/products', payload);
         alert('Product created successfully');
       }
       setFormData({ Id: '', name: '', description: '', variantOil: '', variantSpicy: '', price: '', variantType: '', variantWeight: '' });
@@ -96,7 +96,7 @@ const navigate = useNavigate(); // Initialize navigate function
     let role = cookies.role;
 
     try {
-      await axios.delete(`http://localhost:5000/api/products/${Id}?mb=${mb}&otp=${otp}&role=${role}`);        
+      await axios.delete(`http://localhost:5000/products/${Id}?mb=${mb}&otp=${otp}&role=${role}`);        
       fetchProducts();
     } catch (error) {
       alert(error.response?.data?.error);

@@ -33,7 +33,7 @@ const ProductList = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/products');
+      const response = await axios.get('http://localhost:5000/products');
       setProducts(response.data.products);
     } catch (error) {
       console.error('Error fetching products:', error.response?.data || error.message);
@@ -67,10 +67,10 @@ const ProductList = () => {
 
       if (isEditing) {
         // Update product         
-        await axios.put(`http://localhost:5000/api/products/${formData.Id}`, payload);
+        await axios.put(`http://localhost:5000/products/${formData.Id}`, payload);
         alert('Product updated successfully');
       } else {
-        await axios.post('http://localhost:5000/api/products', payload);
+        await axios.post('http://localhost:5000/products', payload);
         alert('Product created successfully');
       }
       setFormData({ Id: '', name: '', description: '', variantOil: '', variantSpicy: '', price: '', variantType: '', variantWeight: '' });
@@ -94,7 +94,7 @@ const ProductList = () => {
       let otp = cookies.otp;
       let role = cookies.role;
 
-      await axios.delete(`http://localhost:5000/api/products/${Id}?mb=${mb}&otp=${otp}&role=${role}`);
+      await axios.delete(`http://localhost:5000/products/${Id}?mb=${mb}&otp=${otp}&role=${role}`);
       alert('Product deleted successfully');
       fetchProducts();
     } catch (error) {
@@ -122,6 +122,13 @@ const ProductList = () => {
           onChange={handleInputChange}
           required
           disabled
+        />
+        <input
+          type="text"
+          name="image"
+          placeholder="Image URL"
+          value={formData.image}
+          onChange={handleInputChange}
         />
         <textarea
           name="description"

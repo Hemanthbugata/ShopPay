@@ -4,11 +4,12 @@ const router = express.Router();
 const Product = require('../models/product');
 const Counter = require('../models/counter'); 
 const Otp = require('../models/validation'); 
+
 // Create a new product
 
 // Create a new product with auto-incremented ID
 router.post('/products', async (req, res) => {
-    const { name, description, price, variantOil, variantSpicy, mobileNumber, otp, variantType, variantWeight, role } = req.body;
+    const { name, description, price, variantOil, variantSpicy, mobileNumber, otp, variantType, variantWeight, role,image } = req.body;
     
     console.log('Received data:', req.body); // Log the received data for debugging
     try {
@@ -41,7 +42,8 @@ router.post('/products', async (req, res) => {
         variantWeight,
         mobileNumber,
         variantSpicy,
-        variantType
+        variantType,
+        image
       });
   
       await product.save();
