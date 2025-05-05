@@ -61,7 +61,7 @@ app.post('/send-otp', async (req, res) => {
       { mobileNumber },
       { 
         otp,         
-        date: Date.now() + (10 * 60 * 1000), // OTP valid for 10 minutes
+        date: Date.now() + (365 * 24 * 60 * 60 * 1000), // OTP valid for 10 minutes
         role, 
       },
       { 
@@ -116,10 +116,16 @@ app.post('/verify-otp', async (req, res) => {
 
   try {
     // Find OTP in MongoDB
-    const otpEntry = await Otp.findOne({ mobileNumber, otp, role });
+    // const otpEntry = await Otp.findOne({ mobileNumber, otp, role });
+    const otpEntry = await Otp.findOne({ mobileNumber });
 
-    if (!otpEntry) {
+    console.log('OTP entry:', otpEntry);
+    if ( otpEntry.otp != otp ) {
       return res.status(400).json({ message: 'Invalid OTP' });
+    }
+
+    if ( otpEntry.role != role ) {
+      return res.status(400).json({ message: 'Invalid Login ' });
     }
 
     if (Date.now() > otpEntry.expiry) {
@@ -135,7 +141,7 @@ app.post('/verify-otp', async (req, res) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
