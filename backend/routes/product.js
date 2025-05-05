@@ -8,12 +8,12 @@ const Otp = require('../models/validation');
 
 // Create a new product with auto-incremented ID
 router.post('/products', async (req, res) => {
-    const { name, description, price, variantOil, variantSpicy, mobileNumber, otp, variantType, variantWeight} = req.body;
+    const { name, description, price, variantOil, variantSpicy, mobileNumber, otp, variantType, variantWeight, role } = req.body;
     
     console.log('Received data:', req.body); // Log the received data for debugging
     try {
       // Validate OTP and mobile number
-      const otpEntry = await Otp.findOne({ mobileNumber, otp });
+      const otpEntry = await Otp.findOne({ mobileNumber, otp, role });
       if (!otpEntry) {
         return res.status(401).json({ error: 'Invalid OTP or mobile number' });
       }
@@ -59,7 +59,18 @@ router.post('/products', async (req, res) => {
 // Get all products
 
 router.get('/products', async (req, res) => {
+    console.log('Received data:', req.query); // Log the received data for debugging
     try {
+        const mobileNumber = req.query.mobileNumber; // Get mobile number from query parameters
+        const otp = req.query.otp; // Get OTP from query parameters
+        const role = req.query.role; // Get role from query parameters
+
+        const otpEntry = await Otp.findOne({ mobileNumber, otp, role });
+
+        if (!otpEntry) {
+            return res.status(401).json({ error: 'Login Error ' });          
+        }
+
         const products = await Product.find();
         res.json({ message: 'Products fetched successfully', products });
     } catch (error) {
@@ -70,7 +81,19 @@ router.get('/products', async (req, res) => {
 // Get product by ID
 
 router.get('/products/:Id', async (req, res) => {
+
     const Importd = req.params.Id;
+    let mobileNumber = req.query.mb; // Get mobile number from query parameters
+    let otp = req.query.otp; // Get OTP from query parameters
+    let role = req.query.role; // Get role from query parameters
+
+    console.log('Received data:', req.params.Id ); // Log the received data for debugging
+    const otpEntry = await Otp.findOne({ mobileNumber, otp, role });
+
+    if (!otpEntry) {
+        return res.status(401).json({ error: 'Invalid OTP or mobile number' });          
+    }
+
     try {
         const product = await Product.findById(Id);
         if (product) {
@@ -87,7 +110,17 @@ router.get('/products/:Id', async (req, res) => {
 // Update product by ID
 router.put('/products/:Id', async (req, res) => {
     const Id = req.params.Id; // Extract the product Id from the request parameters
+    const mobileNumber = req.body.mobileNumber; // Get mobile number from query parameters
+    const otp = req.body.otp; // Get OTP from query parameters
+    const role = req.body.role; // Get role from query parameters
+
     try {
+        const otpEntry = await Otp.findOne({ mobileNumber, otp, role });
+
+        if (!otpEntry) {
+            return res.status(401).json({ error: 'Invalid OTP or mobile number' });          
+        }
+
         // Find the product by its Id and update it
         const product = await Product.findOneAndUpdate(
             { Id: Id }, // Query to find the product by Id
@@ -107,8 +140,18 @@ router.put('/products/:Id', async (req, res) => {
 
 // Delete product by custom field Id
 router.delete('/products/:Id', async (req, res) => {
-    const Id = req.params.Id; // Extract the product Id from the request parameters
+    const Id = req.params.Id; // Extract the product Id from the request parameters    
+    const mobileNumber = req.query.mb; // Get mobile number from query parameters
+    const otp = req.query.otp; // Get OTP from query parameters
+    const role = req.query.role; // Get role from query parameters    
+
     try {
+        const otpEntry = await Otp.findOne({ mobileNumber, otp, role });
+
+        if (!otpEntry) {
+            return res.status(401).json({ error: 'Invalid OTP or mobile number' });          
+        }
+    
         // Find the product by its custom Id field and delete it
         const product = await Product.findOneAndDelete({ Id: Id });
 

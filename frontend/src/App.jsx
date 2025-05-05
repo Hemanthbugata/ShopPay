@@ -2,17 +2,18 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { CookiesProvider, useCookies } from 'react-cookie';
 import Dashboard from './components/Dashboard';
+import LoginPage from './components/Loginpage'; // Import the LoginPage component
 import Userhomepage from './components/Userhomepage'; // Import the UserhomePage component
 import ProductEntry from './components/ProductEntry';
 import ProductList from './components/ProductList'; 
-import LoginPage from './components/LoginPage'; // Import the LoginPage component
 import './App.css';
 
 // AppContent component that uses hooks within the CookiesProvider context
 const AppContent = () => {
   const [cookies, removeCookie] = useCookies(['otp', 'mobileNumber', 'role']); // Use useCookies to handle cookies
-  const isAuthenticated = !!cookies.otp; // Check if the user is authenticated
+  const isAuthenticated =  cookies.otp; // Check if the user is authenticated
   const userRole = cookies.role; // Get the user's role from cookies
+  const isMobileNumber = cookies.mobileNumber; // Get the mobile number from cookies
 
   const handleLogout = () => {
     removeCookie('otp');
@@ -21,19 +22,27 @@ const AppContent = () => {
   };
 
   return (
-    <Router>
+    <Router>  
       <Routes>
         {/* Redirect to dashboard if authenticated, otherwise show login */}
         <Route
           path="/login"
           element={
-            isAuthenticated
-              ? userRole === 'admin'
-                ? <Navigate to="/dashboard" />
-                : <Navigate to="/userhomepage" />
-              : <LoginPage />
+            isMobileNumber === undefined ? (
+              isAuthenticated ? (
+                userRole === 'admin' ? (
+                  <Navigate to="/dashboard" />
+                ) : (
+                  <Navigate to="/userhomepage" />
+                )
+              ) : (
+                <LoginPage />
+              )
+            ) : (
+              <LoginPage />
+            )
           }
-        />
+        />      
 
         {/* Admin dashboard */}
         <Route

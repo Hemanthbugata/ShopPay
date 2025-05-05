@@ -28,10 +28,16 @@ const navigate = useNavigate(); // Initialize navigate function
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/products');
+      const response = await axios.get('http://localhost:5000/api/products',{
+        params: {
+          mobileNumber: cookies.mobileNumber,
+          otp: cookies.otp,
+          role: cookies.role
+        }
+      });
       setProducts(response.data.products);
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error('Error fetching products:', error.response?.data || error.message);
     }
   };
 
@@ -61,7 +67,7 @@ const navigate = useNavigate(); // Initialize navigate function
       console.log('Payload:', payload);
 
       if (isEditing) {
-        // Update product         
+        // Update product             
         await axios.put(`http://localhost:5000/api/products/${formData.Id}`, payload);
         alert('Product updated successfully');
       } else {
@@ -85,12 +91,15 @@ const navigate = useNavigate(); // Initialize navigate function
   };
 
   const handleDelete = async (Id) => {
+    let mb = cookies.mobileNumber;
+    let otp = cookies.otp;
+    let role = cookies.role;
+
     try {
-      await axios.delete(`http://localhost:5000/api/products/${Id}`);
-      alert('Product deleted successfully');
+      await axios.delete(`http://localhost:5000/api/products/${Id}?mb=${mb}&otp=${otp}&role=${role}`);        
       fetchProducts();
     } catch (error) {
-      console.error('Error deleting product:', error);
+      alert(error.response?.data?.error);
     }
   };
 
@@ -101,7 +110,7 @@ const navigate = useNavigate(); // Initialize navigate function
         {products.map((product) => (
           <li key={product.Id} className="product-item">
             <div>
-              <strong> {product.Id} - {product.name}</strong> - {product.description} - ${product.price}
+              <strong> {product.Id} - {product.name}</strong> - {product.description} - ₹ {product.price}
             </div>
             <div>
               <button onClick={() => handleEdit(product)} className="edit-button">Edit</button>

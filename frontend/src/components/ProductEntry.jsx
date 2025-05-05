@@ -36,7 +36,7 @@ const ProductList = () => {
       const response = await axios.get('http://localhost:5000/api/products');
       setProducts(response.data.products);
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error('Error fetching products:', error.response?.data || error.message);
     }
   };
 
@@ -90,11 +90,15 @@ const ProductList = () => {
 
   const handleDelete = async (Id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/products/${Id}`);
+      let mb = cookies.mobileNumber;
+      let otp = cookies.otp;
+      let role = cookies.role;
+
+      await axios.delete(`http://localhost:5000/api/products/${Id}?mb=${mb}&otp=${otp}&role=${role}`);
       alert('Product deleted successfully');
       fetchProducts();
     } catch (error) {
-      console.error('Error deleting product:', error);
+      alert(error.response?.data?.error);      
     }
   };
 
@@ -171,7 +175,7 @@ const ProductList = () => {
         {products.map((product) => (
           <li key={product.Id} className="product-item">
             <div>
-              <strong> {product.Id} - {product.name}</strong> - {product.description} - ${product.price}
+              <strong> {product.Id} - {product.name}</strong> - {product.description} - ₹ {product.price}
             </div>
             <div>
               <button onClick={() => handleEdit(product)} className="edit-button">Edit</button>

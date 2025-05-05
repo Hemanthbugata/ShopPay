@@ -32,7 +32,7 @@ const Dashboard = ({ onLogout }) => {
   return (
     <div className="dashboard-container">
       <header className="dashboard-header">
-        <h1>Dashboard</h1>
+        <h1>Admin Cockpit</h1>
         <nav>
           <ul className="nav-links">
             <li onClick={() => setActiveMenu('productEntry')}>Product Creation</li>
