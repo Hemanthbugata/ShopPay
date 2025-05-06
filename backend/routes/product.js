@@ -43,6 +43,7 @@ router.post('/products', async (req, res) => {
         mobileNumber,
         variantSpicy,
         variantType,
+        materialType,
         image
       });
   
@@ -83,8 +84,7 @@ router.get('/products', async (req, res) => {
 // Get product by ID
 
 router.get('/products/:Id', async (req, res) => {
-
-    const Importd = req.params.Id;
+    const Id = req.params.Id; // Extract the product Id from the request parameters
     let mobileNumber = req.query.mb; // Get mobile number from query parameters
     let otp = req.query.otp; // Get OTP from query parameters
     let role = req.query.role; // Get role from query parameters
@@ -127,7 +127,7 @@ router.put('/products/:Id', async (req, res) => {
         const product = await Product.findOneAndUpdate(
             { Id: Id }, // Query to find the product by Id
             req.body,   // Update the product with the request body
-            { upsert: true } // Return the updated document
+            { new: true, upsert: true } // Return the updated document
         );
 
         if (product) {

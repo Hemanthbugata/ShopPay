@@ -28,6 +28,12 @@ const productSchema = new mongoose.Schema({
         enum: ['Half kg', '1kg' ], // Cold pressed or refined oil
         required: true
       },     
+      materialType: {
+        type: String,
+        enum: ['RM', 'SG', 'FG'], // Cold pressed or refined oil
+        required: false
+      },
+
     price: Number,
     image: String,
     rating: {

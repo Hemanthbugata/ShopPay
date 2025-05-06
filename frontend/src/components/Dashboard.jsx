@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProductEntry from './ProductEntry';
 import ProductList from './ProductList';
+import OutletList from './OutletList';
 
 const Dashboard = ({ onLogout }) => {
   const [activeMenu, setActiveMenu] = useState('');
@@ -16,8 +17,10 @@ const Dashboard = ({ onLogout }) => {
     switch (activeMenu) {
       case 'productEntry':
         return <ProductEntry />;
-        case 'productList':
+      case 'productList':
           return <ProductList />;  
+      case 'outletList':
+        return <OutletList />;
       case 'stockInput':
         return <div>Stock Input Component</div>;
       case 'employeeCreation':
@@ -37,6 +40,7 @@ const Dashboard = ({ onLogout }) => {
           <ul className="nav-links">
             <li onClick={() => setActiveMenu('productEntry')}>Product Creation</li>
             <li onClick={() => setActiveMenu('productList')}>Product List</li>
+            <li onClick={() => setActiveMenu('outletList')}>Outlets</li>
             <li onClick={() => setActiveMenu('stockInput')}>Stock Input</li>
             <li onClick={() => setActiveMenu('employeeCreation')}>Employee Creation</li>
             <li onClick={() => setActiveMenu('stockIssue')}>Stock Issue</li>

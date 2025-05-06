@@ -17,6 +17,7 @@ const ProductList = () => {
     variantSpicy: '',
     variantWeight: '',
     price: '',
+    materialType: '',
     mobileNumber: '',
     otp: '',
     role: '',
@@ -68,10 +69,10 @@ const ProductList = () => {
       if (isEditing) {
         // Update product         
         await axios.put(`http://localhost:5000/products/${formData.Id}`, payload);
-        alert('Product updated successfully');
+//        alert('Product updated successfully');
       } else {
         await axios.post('http://localhost:5000/products', payload);
-        alert('Product created successfully');
+//        alert('Product created successfully');
       }
       setFormData({ Id: '', name: '', description: '', variantOil: '', variantSpicy: '', price: '', variantType: '', variantWeight: '' });
       // Reset form data after submission
@@ -122,7 +123,7 @@ const ProductList = () => {
           onChange={handleInputChange}
           required
           disabled
-        />
+        />        
         <input
           type="text"
           name="image"
@@ -137,6 +138,12 @@ const ProductList = () => {
           onChange={handleInputChange}
           required
         />
+        <select name="materialType" value={formData.materialType} onChange={handleInputChange} required>
+          <option value="">Type of Material</option>
+          <option value="FG">Final Product</option>
+          <option value="RM">Raw Producr</option>
+          <option value="SG">Semi Finished Product</option>
+        </select>
         <select name="variantType" value={formData.variantType} onChange={handleInputChange} required>
             <option value="">Select Variant Type</option>
             <option value="CHICKEN">Chicken</option>

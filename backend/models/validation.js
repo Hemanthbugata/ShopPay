@@ -18,7 +18,7 @@ const otpSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ["user", "admin"], // Only allows 'user' or 'admin'
+        enum: ["user", "admin" , "outlet", "employee" ],  // Only allows 'user' or 'admin'
         required: false,
         default: "user",
     },
